@@ -22,6 +22,7 @@ Nodo *crearNodo(int *ID);
 void agregarNodo(Nodo *nuevoNodo, Nodo **cabeza);
 void mostrarLista(Nodo **cabeza, char *titulo);
 void pasajeListas(Nodo **cabeza, Nodo **nuevaCabeza, int idTarea);
+void buscarPorID(Nodo **cabeza1, Nodo **cabeza2, int idTarea);
 
 int main()
 {
@@ -39,6 +40,7 @@ int main()
         puts("2) Listar tareas pendientes");
         puts("3) Marcar tarea pendiente como realizada");
         puts("4) Listar tareas realizadas");
+        puts("5) Buscar tarea por ID");
         puts("0 para salir del programa");
 
         scanf("%d", &eleccion);
@@ -58,14 +60,20 @@ int main()
             mostrarLista(&TareasPendientes, "TAREAS PENDIENTES");
             break;
         case 3:
-            puts("Ingrese ID de la tarea para transferirla a lista realizada");  
+            puts("Ingrese ID de la tarea para transferirla a lista realizada");
             scanf("%d", &idTarea);
             pasajeListas(&TareasPendientes, &TareasRealizadas, idTarea);
             break;
-        case 4: mostrarLista(&TareasRealizadas, "TAREAS REALIZADAS");  
-            break;  
-
-        default : break;
+        case 4:
+            mostrarLista(&TareasRealizadas, "TAREAS REALIZADAS");
+            break;
+        case 5:
+            puts("Ingrese ID de la tarea a buscar");
+            scanf("%d", &idTarea);
+            buscarPorID(&TareasPendientes, &TareasRealizadas, idTarea);
+            break;
+        default: puts("Numero ingresado incorrecto");
+            break;
         }
 
     } while (eleccion != 0);
@@ -100,7 +108,7 @@ Nodo *crearNodo(int *ID)
     {
         puts("Por favor ingrese un numero valido entre 10 y 100");
         scanf("%d", &duracion);
-    } 
+    }
 
     nuevo->T.Duracion = duracion;
 
@@ -125,16 +133,17 @@ void mostrarLista(Nodo **cabeza, char *titulo)
         {
             fflush(stdin);
             printf("ID--> %d\n", aux->T.TareaID);
-            printf("DESCRIPCION--> %s",aux->T.Descripcion);
+            printf("DESCRIPCION--> %s", aux->T.Descripcion);
             printf("DURACION--> %d\n", aux->T.Duracion);
             printf("\n");
             aux = aux->Siguiente;
         }
-    }else{
+    }
+    else
+    {
         puts("\n");
         puts("La lista está vacía");
         puts("\n");
-
     }
 }
 
@@ -142,8 +151,8 @@ void pasajeListas(Nodo **cabeza, Nodo **nuevaCabeza, int idTarea)
 {
     Nodo *aux = *cabeza;
     Nodo *anterior = NULL;
-    
-    if(aux != NULL)
+
+    if (aux != NULL)
     {
         while (aux != NULL && aux->T.TareaID != idTarea)
         {
@@ -151,25 +160,75 @@ void pasajeListas(Nodo **cabeza, Nodo **nuevaCabeza, int idTarea)
             aux = aux->Siguiente;
         }
 
-        if(aux)
+        if (aux)
         {
-           if (anterior == NULL)
+            if (anterior == NULL)
             {
-                *cabeza = aux->Siguiente; 
+                *cabeza = aux->Siguiente;
             }
             else
             {
-                anterior->Siguiente = aux->Siguiente; 
+                anterior->Siguiente = aux->Siguiente;
             }
 
-            aux->Siguiente = NULL; 
-            agregarNodo(aux, nuevaCabeza); 
+            aux->Siguiente = NULL;
+            agregarNodo(aux, nuevaCabeza);
             printf("Tarea de id %d marcada como realizada \n", idTarea);
-        }else{
+        }
+        else
+        {
             puts("No se encontro la tarea con el id solicitado");
         }
-    }else{
+    }
+    else
+    {
         puts("La lista de tareas pendientes esta vacia, no hay nada que mover");
     }
+}
 
+void buscarPorID(Nodo **cabeza1, Nodo **cabeza2, int idTarea)
+{
+    Nodo *aux1 = *cabeza1;
+    Nodo *aux2 = *cabeza2;
+
+    if (aux1 != NULL)
+    {
+        while (aux1 != NULL && aux1->T.TareaID != idTarea)
+        {
+            aux1 = aux1->Siguiente;
+        }
+
+        if (aux1)
+        {
+            printf("Se encontró la tarea de id %d en la lista de PENDIENTES \n", idTarea);
+            puts("--Mostrando tarea--");
+            printf("ID: %d \n", aux1->T.TareaID);
+            printf("DESCRIPCION: %s", aux1->T.Descripcion);
+            printf("DURACION %d \n", aux1->T.Duracion);
+        }
+        else
+        {
+            while (aux2 != NULL && aux2->T.TareaID != idTarea)
+            {
+                aux2 = aux2->Siguiente;
+            }
+
+            if (aux2)
+            {
+                printf("Se encontró la tarea de id %d en la lista de REALIZADOS \n", idTarea);
+                puts("--Mostrando tarea--");
+                printf("ID: %d \n", aux2->T.TareaID);
+                printf("DESCRIPCION: %s", aux2->T.Descripcion);
+                printf("DURACION %d \n", aux2->T.Duracion);
+            }
+            else
+            {
+                puts("No se encontro tarea alguna con el id proporcionado");
+            }
+        }
+    }
+    else
+    {
+        puts("La lista de tareas pendientes esta vacia, no hay nada que mover");
+    }
 }
